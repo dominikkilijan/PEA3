@@ -7,7 +7,8 @@ using namespace std;
 class Genetic
 {
 public:
-	Genetic(int, int, double, int**); // wierzcholki, stopTime, alfa, macierz 
+	Genetic(int, int**, int, double, double, double, int, int ); // wierzcholki, macierz, stopTime, startingPopulation, 
+																 // mutation, crossover, crossoverChoice, mutationChoice
 	~Genetic();
 	long long int read_QPC();
 	double countSum(vector<int>);
@@ -28,15 +29,20 @@ private:
 	vector<int> bestPath;
 	vector<int> finalPath;
 
+	//int stopTime, double startingPopulation, double mutation, double crossover, int crossoverChoice, int mutationChoice
 	int N;
 	int** matrix;
-	long double temperature, halfTemperature, stopTemperature;
-	double a;
-	int stopTime;
-	double bestSum, currentSum, finalSum;
-	long double delta;
-	long double finalElapsed;
 
+	int stopTime;
+	double startingPopulation;
+	double mutation;
+	double crossover;
+	int crossoverChoice;
+	int mutationChoice;
+
+	double bestSum, currentSum, finalSum;
+
+	long double finalElapsed;
 	long long int start, elapsed, frequency;
 };
 

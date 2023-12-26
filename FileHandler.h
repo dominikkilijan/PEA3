@@ -10,7 +10,7 @@ public:
 	~FileHandler();
 	void openFile(string);
 	double readPathFromFile(string);
-	void runAlgorithm(int, double);
+	void runAlgorithm(int, double, double, double, int, int);
 	void renameFile(string, string);
 
 private:

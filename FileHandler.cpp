@@ -47,9 +47,11 @@ double FileHandler::readPathFromFile(string filename)
 	return sum;
 }
 //------------------------------------------------------------------------------------------------------------------------------------
-void FileHandler::runAlgorithm(int stopTime, double alpha)
+// stopTime, startingPopulation, mutation, crossover, crossoverChoice, mutationChoice
+// int stopTime, double startingPopulation, double mutation, double crossover, int crossoverChoice, int mutationChoice
+void FileHandler::runAlgorithm(int stopTime, double startingPopulation, double mutation, double crossover, int crossoverChoice, int mutationChoice)
 {
-	adMat.runAlgorithm(stopTime, alpha);
+	adMat.runAlgorithm(stopTime, startingPopulation, mutation, crossover, crossoverChoice, mutationChoice);
 }
 //------------------------------------------------------------------------------------------------------------------------------------
 void FileHandler::renameFile(string a, string b)

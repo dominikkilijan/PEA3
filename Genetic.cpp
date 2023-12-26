@@ -16,20 +16,35 @@ using namespace std::chrono;
 
 
 //------------------------------------------------------------------------------------------------------------------------------------
-Genetic::Genetic(int n, int sTime, double alpha, int** m)
+//Genetic(int, int**, int, double, double, double, int, int); // wierzcholki, macierz, stopTime, startingPopulation, 
+// mutation, crossover, crossoverChoice, mutationChoice
+
+
+Genetic::Genetic(int n, int** m, int sTime, double startPop, double mut, double cross, int cChoice, int mChoice)
 {
 	N = n;
-	stopTime = sTime;
-
-	a = alpha;
+	cout << "Wierzcholki: " << N << "\n";
 	matrix = m;
+	stopTime = sTime;
+	cout << "stopTime: " << stopTime << "\n";
+	startingPopulation = startPop;
+	cout << "Populacja poczatkowa: " << startingPopulation << "\n";
+	mutation = mut;
+	cout << "Mutacja: " << mutation << "\n";
+	crossover = cross;
+	cout << "Crossover: " << crossover << "\n";
+	crossoverChoice = cChoice;
+	cout << "Metoda krzyzowania: " << crossoverChoice << "\n";
+	mutationChoice = mChoice;
+	cout << "Metoda mutacji: " << mutationChoice << "\n";
+	
 	// zarezerwowanie odpowiedniej ilosci miejsca
 	currentPath.reserve(N);
 	bestPath.reserve(N);
 	finalPath.reserve(N);
 
 	// pseudolosowosc do prawdopodobienstwa
-	srand(temperature + time(NULL));
+	srand(time(NULL));
 
 	// zmienne zwiazane z pomiarem czasu
 	long long int frequency = 0;
@@ -112,11 +127,6 @@ void Genetic::neighbourPath()
 	currentPath = newPath;
 }
 //------------------------------------------------------------------------------------------------------------------------------------
-void Genetic::nextTemperature()
-{
-	temperature *= a;
-}
-//------------------------------------------------------------------------------------------------------------------------------------
 long double Genetic::TSPGenetic()
 {
 	// rozpoczecie pomiaru czasu
@@ -137,7 +147,7 @@ long double Genetic::TSPGenetic()
 	fstream file;
 	file.open("temp.txt", ios::out);
 	file << N << endl;
-	long double finalTemp = exp(-delta / temperature);
+	//long double finalTemp = exp(-delta / temperature);
 
 	/*cout << "\n\nWaga = " << finalSum << endl;
 	cout << "Prawdopodobienstwo koncowe = " << finalTemp << endl;

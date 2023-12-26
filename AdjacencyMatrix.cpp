@@ -161,14 +161,14 @@ void AdjacencyMatrix::fillFromFileXML(fstream* file)
 	}
 }
 //------------------------------------------------------------------------------------------------------------------------------------
-void AdjacencyMatrix::runAlgorithm(int stopTime, double alpha)
+void AdjacencyMatrix::runAlgorithm(int stopTime, double startingPopulation, double mutation, double crossover, int crossoverChoice, int mutationChoice)
 {
 	sumElapsed = 0;
 
 	// uruchomienie algorytmu. Na etapie mierzenia czasow modyfikowana byla liczba iteracji w petli for
 	for (int i = 0; i < 1; i++)
 	{
-		Genetic sa(N, stopTime, alpha, matrix);
+		Genetic sa(N, matrix, stopTime, startingPopulation, mutation, crossover, crossoverChoice, mutationChoice);
 		sumElapsed += sa.TSPGenetic();
 	}
 	//cout << "Sredni czas wykonania w ms: " << setprecision(10) << sumElapsed << endl;

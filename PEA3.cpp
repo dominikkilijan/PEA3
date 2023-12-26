@@ -9,8 +9,15 @@ int choice;
 int run = 1;
 string filename = "nic";
 string filename2;
+
+// stopTime, startingPopulation, mutation, crossover, crossoverChoice, mutationChoice
 int stopTime = 120;
-double alpha = 0.99999;
+double startingPopulation = 10;
+double mutation = 0.01;
+double crossover = 0.5;
+int crossoverChoice = 1;
+int mutationChoice = 1;
+
 
 
 int main()
@@ -23,11 +30,15 @@ int main()
         cout << "MENU:\n";;
         cout << "1. Wczytaj dane z pliku\n";
         cout << "2. Wprowadz kryterium stopu\n";
-        cout << "3. Ustaw wspolczynnik zmiany temperatury\n";
-        cout << "4. Uruchom algorytm\n";
-        cout << "5. Zapisz sciezke do pliku\n";
-        cout << "6. Oblicz sciezke z zapisanego pliku\n";
-        cout << "7. Zakoncz\n";
+        cout << "3. Ustaw wielkosc populacji poczatkowej\n";
+        cout << "4. Ustaw wspolczynnik mutacji\n";
+        cout << "5. Ustaw wspolczynnik krzyzowania\n";
+        cout << "6. (niezaimplementowane) Wybierz metode krzyzowania (niezaimplementowane)\n";
+        cout << "7. (niezaimplementowane) Wybierz metode mutacji (niezaimplementowane)\n";
+        cout << "8. Uruchom algorytm\n";
+        cout << "9. Zapisz sciezke do pliku\n";
+        cout << "10. Oblicz sciezke z zapisanego pliku\n";
+        cout << "11. Zakoncz\n";
 
         cin >> choice;
 
@@ -36,6 +47,7 @@ int main()
         {
         case 1:
         {
+            // Wczytaj dane z pliku
             cout << "Podaj nazwe pliku:\n";
             cin >> filename;
             //filename = "rbg358.xml";
@@ -48,26 +60,57 @@ int main()
         break;
         case 2:
         {
+            // Wprwadz kryterium stopu
             cout << "Po ilu sekundach zakonczyc dzialanie?\n";
             cin >> stopTime;
         }
         break;
         case 3:
         {
-            cout << "Wspolczynnik zmiany temperatury:\n";
-            cin >> alpha;
+            // Ustaw wielkosc populacji poczatkowej
+            cout << "Wielkosc populacji poczatkowej:\n";
+            cin >> startingPopulation;
         }
         break;
         case 4:
         {
+            // Ustaw wspolczynnik mutacji
+            cout << "Wspolczynnik mutacji:\n";
+            cin >> mutation;
+        }
+        case 5:
+        {
+            // Ustaw wspolczynnik krzyzowania
+            cout << "Wspolczynnik krzyzowania:\n";
+            cin >> crossover;
+        }
+        break;
+        case 6:
+        {
+            // Wybierz metode krzyzowania
+            cout << "1. Metoda A:\n";
+            cout << "2. Metoda B:\n";
+            cin >> crossoverChoice;
+        }
+        break;
+        case 7:
+        {
+            // Wybierz metode mutacji
+            cout << "1. Metoda A:\n";
+            cout << "2. Metoda B:\n";
+            cin >> mutationChoice;
+        }
+        break;
+        case 8:
+        {
             if (filename != "nic")
-                fHandler.runAlgorithm(stopTime, alpha);
+                fHandler.runAlgorithm(stopTime, startingPopulation, mutation, crossover, crossoverChoice, mutationChoice);
             else
                 cout << "Wczytaj dane z pliku!\n";
 
         }
         break;
-        case 5:
+        case 9:
         {
             if (filename != "nic")
             {
@@ -79,7 +122,7 @@ int main()
                 cout << "Wczytaj dane z pliku!\n";
         }
         break;
-        case 6:
+        case 10:
         {
 
 
@@ -96,7 +139,7 @@ int main()
 
         }
         break;
-        case 7:
+        case 11:
         {
             cout << "Koniec programu\n";
             run = 0;
