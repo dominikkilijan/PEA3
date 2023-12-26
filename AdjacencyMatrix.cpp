@@ -115,6 +115,7 @@ void AdjacencyMatrix::fillFromFileXML(fstream* file)
 		}
 
 		N = linesCount;
+		cout << "linesCount: " << linesCount << "\n";
 
 		// powrot kursora na szczyt pliku
 		file->clear();
@@ -147,8 +148,10 @@ void AdjacencyMatrix::fillFromFileXML(fstream* file)
 
 						// mantysa * exponent zeby dostac wartosc krawedzi
 						int cost = static_cast<int>(costDouble * pow(10, exponent));
-						//cout << "ij = " << i << j << endl;
+						//cout << "ij = " << i << "," << j << endl;
+						//cout << "cost: " << cost << "\n";
 						matrix[i][j] = cost;
+						//cout << matrix[i][j] << "\n";
 						j++;
 					}
 				}
@@ -163,15 +166,9 @@ void AdjacencyMatrix::fillFromFileXML(fstream* file)
 //------------------------------------------------------------------------------------------------------------------------------------
 void AdjacencyMatrix::runAlgorithm(int stopTime, double startingPopulation, double mutation, double crossover, int crossoverChoice, int mutationChoice)
 {
-	sumElapsed = 0;
 
-	// uruchomienie algorytmu. Na etapie mierzenia czasow modyfikowana byla liczba iteracji w petli for
-	for (int i = 0; i < 1; i++)
-	{
-		Genetic sa(N, matrix, stopTime, startingPopulation, mutation, crossover, crossoverChoice, mutationChoice);
-		sumElapsed += sa.TSPGenetic();
-	}
-	//cout << "Sredni czas wykonania w ms: " << setprecision(10) << sumElapsed << endl;
+	Genetic evolution(N, matrix, stopTime, startingPopulation, mutation, crossover, crossoverChoice, mutationChoice);
+	evolution.TSPGenetic();
 
 }
 //------------------------------------------------------------------------------------------------------------------------------------
@@ -182,7 +179,7 @@ void AdjacencyMatrix::printAdjacencyMatrix()
 	{
 		for (int j = 0; j < N; j++)
 		{
-			cout << matrix[i][j] << "\t";
+			cout << matrix[i][j] << "" << "\t";
 		}
 		cout << "\n";
 	}

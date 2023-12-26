@@ -23,34 +23,30 @@ using namespace std::chrono;
 Genetic::Genetic(int n, int** m, int sTime, double startPop, double mut, double cross, int cChoice, int mChoice)
 {
 	N = n;
-	cout << "Wierzcholki: " << N << "\n";
 	matrix = m;
 	stopTime = sTime;
-	cout << "stopTime: " << stopTime << "\n";
 	startingPopulation = startPop;
-	cout << "Populacja poczatkowa: " << startingPopulation << "\n";
 	mutation = mut;
-	cout << "Mutacja: " << mutation << "\n";
 	crossover = cross;
-	cout << "Crossover: " << crossover << "\n";
 	crossoverChoice = cChoice;
-	cout << "Metoda krzyzowania: " << crossoverChoice << "\n";
 	mutationChoice = mChoice;
-	cout << "Metoda mutacji: " << mutationChoice << "\n";
 	
 	// zarezerwowanie odpowiedniej ilosci miejsca
 	currentPath.reserve(N);
 	bestPath.reserve(N);
-	finalPath.reserve(N);
 
-	// pseudolosowosc do prawdopodobienstwa
-	srand(time(NULL));
+	// tylko na czas random
+	for (int i = 0; i < N; i++)
+	{
+		currentPath.emplace_back(i);
+	}
 
 	// zmienne zwiazane z pomiarem czasu
 	long long int frequency = 0;
 	long long int start = 0;
 	long long int elapsed = 0;
 	QueryPerformanceFrequency((LARGE_INTEGER*)&frequency);
+	cout << "Konstruktor dziala\n";
 }
 //------------------------------------------------------------------------------------------------------------------------------------
 Genetic::~Genetic()
@@ -66,10 +62,9 @@ long long int Genetic::read_QPC()
 	return((long long int)count.QuadPart);
 }
 //------------------------------------------------------------------------------------------------------------------------------------
-// wyliczanie wagi aktualnej sciezki sciezki
-double Genetic::countSum(vector<int> countPath)
+//wyliczanie wagi aktualnej sciezki
+double Genetic::countSum(vector<int>& countPath)
 {
-	countPath.reserve(N);
 	double countSum = 0;
 
 	for (int i = 0; i < N; i++)
@@ -104,79 +99,84 @@ void Genetic::PrintBestPath()
 	cout << "\n";
 }
 //------------------------------------------------------------------------------------------------------------------------------------
-// wyliczanie sasiedztwa metoda 2-opt
-void Genetic::neighbourPath()
-{
-	int id1 = rand() % N;
-	int id2 = rand() % N;
-
-	while (id1 == id2) {
-		id2 = rand() % N;
-	}
-
-	if (id1 > id2) {
-		swap(id1, id2);
-	}
-	vector<int> newPath = currentPath;
-
-	reverse(newPath.begin() + id1, newPath.begin() + id2 + 1);
-
-	double newDistance = countSum(newPath);
-	double currentDistance = countSum(currentPath);
-
-	currentPath = newPath;
-}
-//------------------------------------------------------------------------------------------------------------------------------------
-long double Genetic::TSPGenetic()
+void Genetic::TSPGenetic()
 {
 	// rozpoczecie pomiaru czasu
 	start = read_QPC();
-
+	
 	// algorytm
+	cout << "Rozpoczecie algorytmu\n";
 	geneticAlgorithm();
-
+	cout << "Koniec algorytmu\n";
 	// koniec algorytmu
-
-
-	// koniec pomiaru czasu
-	//elapsed = read_QPC() - start;
-	long double timeElapsed = 0;
-	//timeElapsed = ((1000.0 * elapsed) / frequency);
 
 	// wyswietlenie wyniku i zapisanie do pliku
 	fstream file;
 	file.open("temp.txt", ios::out);
 	file << N << endl;
-	//long double finalTemp = exp(-delta / temperature);
 
-	/*cout << "\n\nWaga = " << finalSum << endl;
-	cout << "Prawdopodobienstwo koncowe = " << finalTemp << endl;
-	cout << "Temperatura koncowa = " << temperature << endl;
-	cout << "Czas znaleznienia najlepszego rozwiazania w ms: " << setprecision(10) << finalElapsed << endl;
+	cout << "\n\nWaga = " << bestSum << endl;
+	cout << "Czas znaleznienia najlepszego rozwiazania w ms: " << setprecision(10) << bestElapsed << endl;
 	cout << "Sciezka: ";
 
-	for (int i = 0; i <= finalPath.size(); i++)
+	// wyswietlenie koncowej sciezki
+	for (int i = 0; i <= bestPath.size(); i++)
 	{
-		if (i != finalPath.size())
+		if (i != bestPath.size())
 		{
-			cout << finalPath[i] << "->";
-			file << finalPath[i] << "\n";
+			cout << bestPath[i] << "->";
+			file << bestPath[i] << "\n";
 		}
 		else
 		{
-			cout << finalPath[0] << "\n";
-			file << finalPath[0] << "\n";
+			cout << bestPath[0] << "\n";
+			file << bestPath[0] << "\n";
 		}
 	}
 	cout << "\n";
-	file.close();*/
-
-	return timeElapsed;
+	file.close();
 }
 //------------------------------------------------------------------------------------------------------------------------------------
-int Genetic::geneticAlgorithm()
+void Genetic::geneticAlgorithm() // poki co to jest pelna losowosc. Tylko zeby bylo cokolwiek
 {
+	// poczatkowa sciezka
+	cout << "Poczatkowa sciezka\n";
+	randomPath();
 
-	return 0;
+	// poczatkowe wyniki
+	cout << "Poczatkowe wyniki\n";
+	currentSum = countSum(currentPath);
+	cout << "bestSum = currentSum\n";
+	bestSum = currentSum;
+	
+	// przygotowanie minutnika algorytmu
+	cout << "Rzeczy do minutnika\n";
+	const time_point<system_clock> startTime = system_clock::now();
+	seconds stopTimeSeconds = seconds(stopTime);
+	seconds finalTime;
+	
+	cout << "Algorytm genetyczny\n";
+	// petla jesli nie skonczyl sie czas
+	while ((system_clock::now() - startTime) < stopTimeSeconds)
+	{
+		randomPath();
+		currentSum = countSum(currentPath);
+
+		if (currentSum < bestSum)
+		{
+			// jesli rozwiazanie jest lepsze niz poprzednie
+			bestSum = currentSum;
+			bestPath = currentPath;
+
+
+			// zapisanie i wyswietlenie czasu znalezienia rozwiazania
+			QueryPerformanceFrequency((LARGE_INTEGER*)&frequency);
+			bestElapsed = ((1000.0 * (read_QPC() - start)) / frequency);
+
+			cout << "bestSum = " << bestSum << "\n";
+			cout << "Znalezienie bestSum w ms: " << setprecision(10) << bestElapsed << endl;
+
+		}
+	}
 }
 //------------------------------------------------------------------------------------------------------------------------------------

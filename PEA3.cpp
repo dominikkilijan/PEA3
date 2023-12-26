@@ -1,7 +1,5 @@
 ﻿#include "FileHandler.h"
 #include <iostream>
-#include <vector>
-#include <cstdio>
 
 using namespace std;
 
@@ -10,8 +8,7 @@ int run = 1;
 string filename = "nic";
 string filename2;
 
-// stopTime, startingPopulation, mutation, crossover, crossoverChoice, mutationChoice
-int stopTime = 120;
+int stopTime = 3;
 double startingPopulation = 10;
 double mutation = 0.01;
 double crossover = 0.5;
@@ -49,8 +46,8 @@ int main()
         {
             // Wczytaj dane z pliku
             cout << "Podaj nazwe pliku:\n";
-            cin >> filename;
-            //filename = "rbg358.xml";
+            //cin >> filename;
+            filename = "br17.xml";
             if (filename != "nic")
                 fHandler.openFile(filename);
             else

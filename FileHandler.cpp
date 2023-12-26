@@ -1,11 +1,8 @@
 #include "FileHandler.h"
 #include "AdjacencyMatrix.h"
 #include <iostream>
-#include "AdjacencyMatrix.h"
 #include <fstream>
 #include <string>
-#include <time.h>
-#include <cstdlib>
 #include <vector>
 
 using namespace std;
@@ -47,16 +44,15 @@ double FileHandler::readPathFromFile(string filename)
 	return sum;
 }
 //------------------------------------------------------------------------------------------------------------------------------------
-// stopTime, startingPopulation, mutation, crossover, crossoverChoice, mutationChoice
-// int stopTime, double startingPopulation, double mutation, double crossover, int crossoverChoice, int mutationChoice
-void FileHandler::runAlgorithm(int stopTime, double startingPopulation, double mutation, double crossover, int crossoverChoice, int mutationChoice)
+void FileHandler::runAlgorithm(int stopTime, double startingPopulation, double mutation, 
+							   double crossover, int crossoverChoice, int mutationChoice)
 {
 	adMat.runAlgorithm(stopTime, startingPopulation, mutation, crossover, crossoverChoice, mutationChoice);
 }
 //------------------------------------------------------------------------------------------------------------------------------------
 void FileHandler::renameFile(string a, string b)
 {
-	rename(a.c_str(), b.c_str());
+	int x = rename(a.c_str(), b.c_str());
 }
 //------------------------------------------------------------------------------------------------------------------------------------
 FileHandler::~FileHandler()

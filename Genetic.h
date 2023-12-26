@@ -11,25 +11,18 @@ public:
 																 // mutation, crossover, crossoverChoice, mutationChoice
 	~Genetic();
 	long long int read_QPC();
-	double countSum(vector<int>);
-	void startingPath();
+	double countSum(vector<int>&);
 	void randomPath();
-	void startingTemperature();
-	long double TSPGenetic();
-	int geneticAlgorithm();
 	void printCurrentPath();
 	void PrintBestPath();
-	void neighbourPath();
-	bool probability();
-	void nextTemperature();
+	void TSPGenetic();
+	void geneticAlgorithm();
 
 
 private:
 	vector<int> currentPath;
 	vector<int> bestPath;
-	vector<int> finalPath;
 
-	//int stopTime, double startingPopulation, double mutation, double crossover, int crossoverChoice, int mutationChoice
 	int N;
 	int** matrix;
 
@@ -40,9 +33,10 @@ private:
 	int crossoverChoice;
 	int mutationChoice;
 
-	double bestSum, currentSum, finalSum;
+	long int bestSum, currentSum;
 
-	long double finalElapsed;
+	// zmienne do czasu
+	long double bestElapsed;
 	long long int start, elapsed, frequency;
 };
 
