@@ -127,7 +127,15 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="AdjacencyMatrix.cpp" />
+    <ClCompile Include="FileHandler.cpp" />
+    <ClCompile Include="Genetic.cpp" />
     <ClCompile Include="PEA3.cpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="AdjacencyMatrix.h" />
+    <ClInclude Include="FileHandler.h" />
+    <ClInclude Include="Genetic.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

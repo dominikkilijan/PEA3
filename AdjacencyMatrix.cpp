@@ -169,7 +169,7 @@ void AdjacencyMatrix::runAlgorithm(int stopTime, double alpha)
 	for (int i = 0; i < 1; i++)
 	{
 		Genetic sa(N, stopTime, alpha, matrix);
-		sumElapsed += sa.TSPAnnealing();
+		sumElapsed += sa.TSPGenetic();
 	}
 	//cout << "Sredni czas wykonania w ms: " << setprecision(10) << sumElapsed << endl;
 
