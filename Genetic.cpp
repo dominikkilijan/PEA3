@@ -46,7 +46,6 @@ Genetic::Genetic(int n, int** m, int sTime, double startPop, double mut, double 
 	long long int start = 0;
 	long long int elapsed = 0;
 	QueryPerformanceFrequency((LARGE_INTEGER*)&frequency);
-	cout << "Konstruktor dziala\n";
 }
 //------------------------------------------------------------------------------------------------------------------------------------
 Genetic::~Genetic()
@@ -105,9 +104,7 @@ void Genetic::TSPGenetic()
 	start = read_QPC();
 	
 	// algorytm
-	cout << "Rozpoczecie algorytmu\n";
 	geneticAlgorithm();
-	cout << "Koniec algorytmu\n";
 	// koniec algorytmu
 
 	// wyswietlenie wyniku i zapisanie do pliku
@@ -140,22 +137,17 @@ void Genetic::TSPGenetic()
 void Genetic::geneticAlgorithm() // poki co to jest pelna losowosc. Tylko zeby bylo cokolwiek
 {
 	// poczatkowa sciezka
-	cout << "Poczatkowa sciezka\n";
 	randomPath();
 
 	// poczatkowe wyniki
-	cout << "Poczatkowe wyniki\n";
 	currentSum = countSum(currentPath);
-	cout << "bestSum = currentSum\n";
 	bestSum = currentSum;
 	
 	// przygotowanie minutnika algorytmu
-	cout << "Rzeczy do minutnika\n";
 	const time_point<system_clock> startTime = system_clock::now();
 	seconds stopTimeSeconds = seconds(stopTime);
 	seconds finalTime;
 	
-	cout << "Algorytm genetyczny\n";
 	// petla jesli nie skonczyl sie czas
 	while ((system_clock::now() - startTime) < stopTimeSeconds)
 	{

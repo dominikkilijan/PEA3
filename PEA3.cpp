@@ -111,7 +111,7 @@ int main()
         {
             if (filename != "nic")
             {
-                cout << "Podaj nazwe pliku:\n";
+                cout << "Podaj nazwe pliku wraz z rozszerzeniem:\n";
                 cin >> filename2;
                 fHandler.renameFile("temp.txt", filename2);
             }
@@ -125,7 +125,7 @@ int main()
 
             if (filename != "nic")
             {
-                cout << "Podaj nazwe pliku:\n";
+                cout << "Podaj nazwe pliku wraz z rozszerzeniem:\n";
                 cin >> filename2;
 
                 double fileSum = fHandler.readPathFromFile(filename2);
