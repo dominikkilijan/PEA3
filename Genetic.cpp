@@ -80,13 +80,16 @@ void Genetic::initPath(vector<int>& path)
 }
 //------------------------------------------------------------------------------------------------------------------------------------
 void Genetic::randomPath(vector<int>& path)
-{
-	auto rng = default_random_engine{};
+{	
+	auto seed = static_cast<unsigned>(high_resolution_clock::now().time_since_epoch().count());
+	auto rng = std::default_random_engine(seed);
+
 	shuffle(begin(path), end(path), rng);
 }
 //------------------------------------------------------------------------------------------------------------------------------------
 void Genetic::printPath(vector<int>& path)
 {
+	cout << "printPath:\n";
 	for (int i = 0; i < path.size(); i++)
 	{
 		cout << path[i] << " ";
@@ -94,14 +97,59 @@ void Genetic::printPath(vector<int>& path)
 	cout << "\n";
 }
 //------------------------------------------------------------------------------------------------------------------------------------
-void Genetic::nextGeneration()
+void Genetic::printSpecimen(Specimen& a)
 {
+	cout << "path: \n";
+	printPath(a.path);
+	cout << "sum = " << a.sum << "\n";
+}
+//------------------------------------------------------------------------------------------------------------------------------------
+void Genetic::initPopulation()
+{
+	for (int i = 0; i < startingPopulation; i++)
+	{
+		Specimen a;
+		initPath(a.path);
+		randomPath(a.path);
+		a.sum = countSum(a.path);
+		population.emplace_back(a);
 
+		printSpecimen(a);
+	}
 }
 //------------------------------------------------------------------------------------------------------------------------------------
 bool Genetic::compareSpecimen(Specimen& a, Specimen& b)
 {
 	return a.sum < b.sum;
+}
+//------------------------------------------------------------------------------------------------------------------------------------
+void Genetic::sortPopulation()
+{
+	sort(population.begin(), population.end(), [&](Specimen& a, Specimen& b) {
+		return compareSpecimen(a, b);
+		});
+
+	for (int i = 0; i < population.size(); i++)
+	{
+		printSpecimen(population[i]);
+	}
+
+	// survival of the fittest
+	// zostawiamy 10%
+	int idToErase = ceil(0.1 * startingPopulation);
+	population.erase(population.begin() + idToErase, population.end());
+
+	cout << "\n\nPo usunieciu slabych jednostek\n";
+	cout << "population.size() = " << population.size() << "\n";
+	for (int i = 0; i < population.size(); i++)
+	{
+		printSpecimen(population[i]);
+	}
+}
+//------------------------------------------------------------------------------------------------------------------------------------
+void Genetic::nextGeneration()
+{
+
 }
 //------------------------------------------------------------------------------------------------------------------------------------
 Specimen Genetic::crossover(Specimen& p1, Specimen& p2)
@@ -157,8 +205,8 @@ void Genetic::swapGenes(Specimen& a)
 
 	for (int i = 0; i < (mutationValue * 100); i++)
 	{
-		cout << i << endl;
 		int id1 = distribution(gen);
+		cout << i << endl;
 		int id2 = 0;
 		do
 		{
@@ -214,38 +262,39 @@ void Genetic::geneticAlgorithm() // poki co to jest pelna losowosc. Tylko zeby b
 	//nn.findNearestNeighbourPath();
 	
 	// poczatkowa populacja
-	Specimen a;
-	initPath(a.path);
-	randomPath(a.path);
-	a.sum = countSum(a.path);
-
-	cout << "Random path: \n";
-	printPath(a.path);
-
-	mutation(a);
-	cout << "Inverted path: \n";
-	printPath(a.path);
+	initPopulation();
 
 	// poczatkowe wyniki
-	currentSum = a.sum;
-	bestSum = currentSum;
+	bestSum = population[0].sum;
+	bestPath = population[0].path;
 	
+	// tego tak w sumie tutaj nie trzeba jesli randomPath dziala dobrze. Co innego jesli robimy nn wiec zostawie zakomentowane
+	/*for (int i = 0; i < startingPopulation; i++)
+	{
+		mutation(population[i]);
+		printPath(population[i].path);
+	}*/
+
 	// przygotowanie minutnika algorytmu
 	const time_point<system_clock> startTime = system_clock::now();
 	seconds stopTimeSeconds = seconds(stopTime);
 	seconds finalTime;
 	
 	// petla jesli nie skonczyl sie czas
-	while ((system_clock::now() - startTime) < stopTimeSeconds)
+	//while ((system_clock::now() - startTime) < stopTimeSeconds)
+	for (int i = 0; i < 1; i++)
 	{
-		randomPath(a.path);
-		a.sum = countSum(a.path);
-
-		if (a.sum < bestSum)
+		// sortowanie populacji
+		cout << "\n\nPosegregowane:\n";
+		sortPopulation();
+		// zostawiamy np ceil 10% startingPopulation, reszte usuwamy
+		
+		// population jest posortowane wedlug wagi wiec najlepsze rozwiazanie jest na pierwszym miejscu
+		if (population[0].sum < bestSum)
 		{
 			// jesli rozwiazanie jest lepsze niz poprzednie
-			bestSum = a.sum;
-			bestPath = a.path;
+			bestSum = population[0].sum;
+			bestPath = population[0].path;
 
 
 			// zapisanie i wyswietlenie czasu znalezienia rozwiazania
@@ -256,6 +305,11 @@ void Genetic::geneticAlgorithm() // poki co to jest pelna losowosc. Tylko zeby b
 			cout << "Znalezienie bestSum w ms: " << setprecision(10) << bestElapsed << endl;
 
 		}
+		
+		// tworzymy dzieci crossoverem tj losujemy dwoch rodzicow -> crossover -> mutacja -> dodajemy do vectora az bedzie pelny
+		nextGeneration();
+
+		
 	}
 }
 //------------------------------------------------------------------------------------------------------------------------------------

@@ -22,9 +22,11 @@ public:
 	void randomPath(vector<int>&);
 
 	void printPath(vector<int>&);
+	void printSpecimen(Specimen&);
 
 	void initPopulation();
 	bool compareSpecimen(Specimen&, Specimen&);
+	void sortPopulation();
 	void nextGeneration();
 
 
