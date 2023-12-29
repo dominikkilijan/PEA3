@@ -129,22 +129,10 @@ void Genetic::sortPopulation()
 		return compareSpecimen(a, b);
 		});
 
-	for (int i = 0; i < population.size(); i++)
-	{
-		printSpecimen(population[i]);
-	}
-
 	// survival of the fittest
 	// zostawiamy 10%
 	int idToErase = ceil(0.1 * startingPopulation);
 	population.erase(population.begin() + idToErase, population.end());
-
-	cout << "\n\nPo usunieciu slabych jednostek\n";
-	cout << "population.size() = " << population.size() << "\n";
-	for (int i = 0; i < population.size(); i++)
-	{
-		printSpecimen(population[i]);
-	}
 }
 //------------------------------------------------------------------------------------------------------------------------------------
 void Genetic::nextGeneration()
@@ -155,20 +143,22 @@ void Genetic::nextGeneration()
 Specimen Genetic::crossover(Specimen& p1, Specimen& p2)
 {
 	if (crossoverChoice == 1)
-		 return PMXCross(p1, p2);
-	else
-		return orderedCross(p1, p2);
+		return orderedCrossover(p1, p2);
+	else if (crossoverChoice == 2)
+		 return PMXCrossover(p1, p2);
 }
 //------------------------------------------------------------------------------------------------------------------------------------
-Specimen Genetic::PMXCross(Specimen& p1, Specimen& p2)
+Specimen Genetic::orderedCrossover(Specimen& p1, Specimen& p2)
 {
 	Specimen child;
+
 	return child;
 }
 //------------------------------------------------------------------------------------------------------------------------------------
-Specimen Genetic::orderedCross(Specimen& p1, Specimen& p2)
+Specimen Genetic::PMXCrossover(Specimen& p1, Specimen& p2)
 {
 	Specimen child;
+
 	return child;
 }
 //------------------------------------------------------------------------------------------------------------------------------------
@@ -281,13 +271,12 @@ void Genetic::geneticAlgorithm() // poki co to jest pelna losowosc. Tylko zeby b
 	seconds finalTime;
 	
 	// petla jesli nie skonczyl sie czas
-	//while ((system_clock::now() - startTime) < stopTimeSeconds)
-	for (int i = 0; i < 1; i++)
+	while ((system_clock::now() - startTime) < stopTimeSeconds)
+	//for (int i = 0; i < 1; i++)
 	{
 		// sortowanie populacji
-		cout << "\n\nPosegregowane:\n";
-		sortPopulation();
 		// zostawiamy np ceil 10% startingPopulation, reszte usuwamy
+		sortPopulation();
 		
 		// population jest posortowane wedlug wagi wiec najlepsze rozwiazanie jest na pierwszym miejscu
 		if (population[0].sum < bestSum)
