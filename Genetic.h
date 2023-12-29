@@ -23,8 +23,9 @@ public:
 
 	void printPath(vector<int>&);
 
-	void nextGeneration();
+	void initPopulation();
 	bool compareSpecimen(Specimen&, Specimen&);
+	void nextGeneration();
 
 
 

@@ -1,5 +1,6 @@
 #include "Genetic.h"
 #include "AdjacencyMatrix.h"
+#include "NearestNeighbour.h"
 #include <iostream>
 #include <iomanip>
 #include <Windows.h>
@@ -125,13 +126,10 @@ Specimen Genetic::orderedCross(Specimen& p1, Specimen& p2)
 //------------------------------------------------------------------------------------------------------------------------------------
 void Genetic::mutation(Specimen& a)
 {
-	//cout << "crossoverChoice = " << crossoverChoice << "\n";
 	if (mutationChoice == 1)
 		invertGenes(a);
 	else if (mutationChoice == 2)
 		swapGenes(a);
-	else
-		cout << "Nie bedzie mutacji\n";
 }
 //------------------------------------------------------------------------------------------------------------------------------------
 void Genetic::invertGenes(Specimen& a) 
@@ -168,6 +166,8 @@ void Genetic::swapGenes(Specimen& a)
 		} while (id1 == id2);
 	
 		iter_swap(a.path.begin() + id1, a.path.begin() + id2);
+
+		a.sum = countSum(a.path);
 	}
 }
 //------------------------------------------------------------------------------------------------------------------------------------
@@ -209,7 +209,11 @@ void Genetic::TSPGenetic()
 //------------------------------------------------------------------------------------------------------------------------------------
 void Genetic::geneticAlgorithm() // poki co to jest pelna losowosc. Tylko zeby bylo cokolwiek
 {
-	// poczatkowa sciezka
+	//// greedy sciezka
+	//NearestNeighbour nn(N, matrix, bestPath);
+	//nn.findNearestNeighbourPath();
+	
+	// poczatkowa populacja
 	Specimen a;
 	initPath(a.path);
 	randomPath(a.path);
