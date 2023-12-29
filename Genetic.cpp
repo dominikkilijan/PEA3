@@ -26,20 +26,15 @@ Genetic::Genetic(int n, int** m, int sTime, double startPop, double mut, double 
 	matrix = m;
 	stopTime = sTime;
 	startingPopulation = startPop;
-	mutation = mut;
-	crossover = cross;
+	mutationValue = mut;
+	crossoverValue = cross;
 	crossoverChoice = cChoice;
 	mutationChoice = mChoice;
 	
 	// zarezerwowanie odpowiedniej ilosci miejsca
 	currentPath.reserve(N);
 	bestPath.reserve(N);
-
-	// tylko na czas random
-	for (int i = 0; i < N; i++)
-	{
-		currentPath.emplace_back(i);
-	}
+	population.reserve(startingPopulation);
 
 	// zmienne zwiazane z pomiarem czasu
 	long long int frequency = 0;
@@ -74,28 +69,87 @@ double Genetic::countSum(vector<int>& countPath)
 	return countSum;
 }
 //------------------------------------------------------------------------------------------------------------------------------------
-void Genetic::randomPath()
+void Genetic::initPath(vector<int>& path)
+{
+	// tylko na czas random
+	for (int i = 0; i < N; i++)
+	{
+		path.emplace_back(i);
+	}
+}
+//------------------------------------------------------------------------------------------------------------------------------------
+void Genetic::randomPath(vector<int>& path)
 {
 	auto rng = default_random_engine{};
-	shuffle(begin(currentPath), end(currentPath), rng);
+	shuffle(begin(path), end(path), rng);
 }
 //------------------------------------------------------------------------------------------------------------------------------------
-void Genetic::printCurrentPath()
+void Genetic::printPath(vector<int>& path)
 {
-	for (int i = 0; i < currentPath.size(); i++)
+	for (int i = 0; i < path.size(); i++)
 	{
-		cout << currentPath[i] << " ";
+		cout << path[i] << " ";
 	}
 	cout << "\n";
 }
 //------------------------------------------------------------------------------------------------------------------------------------
-void Genetic::PrintBestPath()
+void Genetic::nextGeneration()
 {
-	for (int i = 0; i < bestPath.size(); i++)
-	{
-		cout << bestPath[i] << " ";
-	}
-	cout << "\n";
+
+}
+//------------------------------------------------------------------------------------------------------------------------------------
+bool Genetic::compareSpecimen(Specimen& a, Specimen& b)
+{
+	return a.sum < b.sum;
+}
+//------------------------------------------------------------------------------------------------------------------------------------
+Specimen Genetic::crossover(Specimen& p1, Specimen& p2)
+{
+	if (crossoverChoice == 1)
+		 return PMXCross(p1, p2);
+	else
+		return orderedCross(p1, p2);
+}
+//------------------------------------------------------------------------------------------------------------------------------------
+Specimen Genetic::PMXCross(Specimen& p1, Specimen& p2)
+{
+	Specimen child;
+	return child;
+}
+//------------------------------------------------------------------------------------------------------------------------------------
+Specimen Genetic::orderedCross(Specimen& p1, Specimen& p2)
+{
+	Specimen child;
+	return child;
+}
+//------------------------------------------------------------------------------------------------------------------------------------
+void Genetic::mutation(Specimen& a)
+{
+	if (crossoverChoice == 1)
+			invertGenes(a);
+	else
+			swapGenes(a);	
+}
+//------------------------------------------------------------------------------------------------------------------------------------
+void Genetic::invertGenes(Specimen& a) 
+{
+	int toCross = floor(crossoverValue * N);
+	int num = N - toCross;
+	
+	int id1 = rand() % num;
+	int id2 = id1 + toCross;
+
+	vector<int> newPath = a.path;
+
+	reverse(newPath.begin() + id1, newPath.begin() + id2 + 1);
+
+	a.path = newPath;
+	a.sum = countSum(a.path);
+}
+//------------------------------------------------------------------------------------------------------------------------------------
+void Genetic::swapGenes(Specimen& a)
+{
+
 }
 //------------------------------------------------------------------------------------------------------------------------------------
 void Genetic::TSPGenetic()
@@ -137,7 +191,16 @@ void Genetic::TSPGenetic()
 void Genetic::geneticAlgorithm() // poki co to jest pelna losowosc. Tylko zeby bylo cokolwiek
 {
 	// poczatkowa sciezka
-	randomPath();
+	Specimen a;
+	initPath(a.path);
+	randomPath(a.path);
+	a.sum = countSum(a.path);
+	cout << "Random path: \n";
+	printPath(a.path);
+
+	mutation(a);
+	cout << "Inverted path: \n";
+	printPath(a.path);
 
 	// poczatkowe wyniki
 	currentSum = countSum(currentPath);
@@ -151,7 +214,7 @@ void Genetic::geneticAlgorithm() // poki co to jest pelna losowosc. Tylko zeby b
 	// petla jesli nie skonczyl sie czas
 	while ((system_clock::now() - startTime) < stopTimeSeconds)
 	{
-		randomPath();
+		randomPath(currentPath);
 		currentSum = countSum(currentPath);
 
 		if (currentSum < bestSum)

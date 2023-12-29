@@ -3,6 +3,12 @@
 
 using namespace std;
 
+struct Specimen
+{
+	vector<int> path;
+	long int sum;
+};
+
 
 class Genetic
 {
@@ -12,28 +18,45 @@ public:
 	~Genetic();
 	long long int read_QPC();
 	double countSum(vector<int>&);
-	void randomPath();
-	void printCurrentPath();
-	void PrintBestPath();
+	void initPath(vector<int>&);
+	void randomPath(vector<int>&);
+
+	void printPath(vector<int>&);
+
+	void nextGeneration();
+	bool compareSpecimen(Specimen&, Specimen&);
+
+
+
+	Specimen crossover(Specimen&, Specimen&);
+	Specimen PMXCross(Specimen&, Specimen&);
+	Specimen orderedCross(Specimen&, Specimen&);
+
+	void mutation(Specimen&);
+	void swapGenes(Specimen&);
+	void invertGenes(Specimen&);
+
 	void TSPGenetic();
 	void geneticAlgorithm();
 
 
 private:
+	vector<Specimen> population;
 	vector<int> currentPath;
 	vector<int> bestPath;
+	vector<int> finalPath;
 
 	int N;
 	int** matrix;
 
 	int stopTime;
 	double startingPopulation;
-	double mutation;
-	double crossover;
+	double mutationValue;
+	double crossoverValue;
 	int crossoverChoice;
 	int mutationChoice;
 
-	long int bestSum, currentSum;
+	long int bestSum, currentSum, finalSum;
 
 	// zmienne do czasu
 	long double bestElapsed;
