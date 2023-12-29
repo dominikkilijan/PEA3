@@ -125,31 +125,50 @@ Specimen Genetic::orderedCross(Specimen& p1, Specimen& p2)
 //------------------------------------------------------------------------------------------------------------------------------------
 void Genetic::mutation(Specimen& a)
 {
-	if (crossoverChoice == 1)
-			invertGenes(a);
+	//cout << "crossoverChoice = " << crossoverChoice << "\n";
+	if (mutationChoice == 1)
+		invertGenes(a);
+	else if (mutationChoice == 2)
+		swapGenes(a);
 	else
-			swapGenes(a);	
+		cout << "Nie bedzie mutacji\n";
 }
 //------------------------------------------------------------------------------------------------------------------------------------
 void Genetic::invertGenes(Specimen& a) 
-{
-	int toCross = floor(crossoverValue * N);
+{	
+	int	toCross = floor(mutationValue * N);
+	if (toCross < 4)
+		toCross += 4;
+
 	int num = N - toCross;
-	
+
 	int id1 = rand() % num;
 	int id2 = id1 + toCross;
 
-	vector<int> newPath = a.path;
+	reverse(a.path.begin() + id1, a.path.begin() + id2);
 
-	reverse(newPath.begin() + id1, newPath.begin() + id2 + 1);
-
-	a.path = newPath;
 	a.sum = countSum(a.path);
 }
 //------------------------------------------------------------------------------------------------------------------------------------
 void Genetic::swapGenes(Specimen& a)
 {
+	// generowanie liczb losowych (rand() bylo niewystarczajace)
+	random_device rd;
+	mt19937 gen(rd());
+	uniform_int_distribution<int> distribution(0, N - 1);
 
+	for (int i = 0; i < (mutationValue * 100); i++)
+	{
+		cout << i << endl;
+		int id1 = distribution(gen);
+		int id2 = 0;
+		do
+		{
+			id2 = distribution(gen);
+		} while (id1 == id2);
+	
+		iter_swap(a.path.begin() + id1, a.path.begin() + id2);
+	}
 }
 //------------------------------------------------------------------------------------------------------------------------------------
 void Genetic::TSPGenetic()
@@ -195,6 +214,7 @@ void Genetic::geneticAlgorithm() // poki co to jest pelna losowosc. Tylko zeby b
 	initPath(a.path);
 	randomPath(a.path);
 	a.sum = countSum(a.path);
+
 	cout << "Random path: \n";
 	printPath(a.path);
 
@@ -203,7 +223,7 @@ void Genetic::geneticAlgorithm() // poki co to jest pelna losowosc. Tylko zeby b
 	printPath(a.path);
 
 	// poczatkowe wyniki
-	currentSum = countSum(currentPath);
+	currentSum = a.sum;
 	bestSum = currentSum;
 	
 	// przygotowanie minutnika algorytmu
@@ -214,14 +234,14 @@ void Genetic::geneticAlgorithm() // poki co to jest pelna losowosc. Tylko zeby b
 	// petla jesli nie skonczyl sie czas
 	while ((system_clock::now() - startTime) < stopTimeSeconds)
 	{
-		randomPath(currentPath);
-		currentSum = countSum(currentPath);
+		randomPath(a.path);
+		a.sum = countSum(a.path);
 
-		if (currentSum < bestSum)
+		if (a.sum < bestSum)
 		{
 			// jesli rozwiazanie jest lepsze niz poprzednie
-			bestSum = currentSum;
-			bestPath = currentPath;
+			bestSum = a.sum;
+			bestPath = a.path;
 
 
 			// zapisanie i wyswietlenie czasu znalezienia rozwiazania

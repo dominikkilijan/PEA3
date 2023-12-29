@@ -8,10 +8,10 @@ int run = 1;
 string filename = "nic";
 string filename2;
 
-int stopTime = 3;
+int stopTime = 1;
 double startingPopulation = 10;
 double mutation = 0.01;
-double crossover = 0.5;
+double crossover = 0.8;
 int crossoverChoice = 1;
 int mutationChoice = 1;
 
@@ -31,7 +31,7 @@ int main()
         cout << "4. Ustaw wspolczynnik mutacji\n";
         cout << "5. Ustaw wspolczynnik krzyzowania\n";
         cout << "6. (niezaimplementowane) Wybierz metode krzyzowania (niezaimplementowane)\n";
-        cout << "7. (niezaimplementowane) Wybierz metode mutacji (niezaimplementowane)\n";
+        cout << "7. Wybierz metode mutacji\n";
         cout << "8. Uruchom algorytm\n";
         cout << "9. Zapisz sciezke do pliku\n";
         cout << "10. Oblicz sciezke z zapisanego pliku\n";
@@ -75,6 +75,7 @@ int main()
             cout << "Wspolczynnik mutacji:\n";
             cin >> mutation;
         }
+        break;
         case 5:
         {
             // Ustaw wspolczynnik krzyzowania
@@ -85,16 +86,16 @@ int main()
         case 6:
         {
             // Wybierz metode krzyzowania
-            cout << "1. Metoda A:\n";
-            cout << "2. Metoda B:\n";
+            cout << "1. PMX crossover\n";
+            cout << "2. Ordered crossover\n";
             cin >> crossoverChoice;
         }
         break;
         case 7:
         {
             // Wybierz metode mutacji
-            cout << "1. Metoda A:\n";
-            cout << "2. Metoda B:\n";
+            cout << "1. Invert\n";
+            cout << "2. Swap\n";
             cin >> mutationChoice;
         }
         break;
