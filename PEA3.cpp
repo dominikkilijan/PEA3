@@ -30,7 +30,7 @@ int main()
         cout << "3. Ustaw wielkosc populacji poczatkowej\n";
         cout << "4. Ustaw wspolczynnik mutacji\n";
         cout << "5. Ustaw wspolczynnik krzyzowania\n";
-        cout << "6. (niezaimplementowane) Wybierz metode krzyzowania (niezaimplementowane)\n";
+        cout << "6. Wybierz metode krzyzowania\n";
         cout << "7. Wybierz metode mutacji\n";
         cout << "8. Uruchom algorytm\n";
         cout << "9. Zapisz sciezke do pliku\n";

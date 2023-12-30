@@ -11,6 +11,7 @@
 #include <random>
 #include <math.h>
 #include <chrono>
+#include <unordered_map>
 
 using namespace std;
 using namespace std::chrono;
@@ -224,7 +225,39 @@ Specimen Genetic::orderedCrossover(Specimen& p1, Specimen& p2)
 Specimen Genetic::PMXCrossover(Specimen& p1, Specimen& p2)
 {
 	Specimen child;
+	child.path.resize(N);
+	unordered_map<int, int> pairsOfVertices;
 
+	int toCross = floor(crossoverValue * N);
+	int toFill = N - toCross;
+	int start = rand() % toFill;
+	int end = start + toCross - 1;
+
+	// kopia sekwencji od pierwszego rodzica
+	for (int i = start; i <= end; i++)
+	{
+		if (i < child.path.size()) // ostroznosci nigdy za wiele
+		{
+			child.path[i] = p1.path[i];
+			pairsOfVertices[p1.path[i]] = p2.path[i];
+		}
+	}
+
+	// uzupelnianie reszty
+	for (int i = 0; i < N; i++)
+	{
+		if (i < start || i > end)
+		{
+			int current = p2.path[i];
+			while (pairsOfVertices.find(current) != pairsOfVertices.end())
+			{
+				current = pairsOfVertices[current];
+			}
+			child.path[i] = current;
+		}
+	}
+
+	child.sum = countSum(child.path);
 	return child;
 }
 //------------------------------------------------------------------------------------------------------------------------------------
