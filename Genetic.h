@@ -32,8 +32,8 @@ public:
 
 
 	Specimen crossover(Specimen&, Specimen&);
-	Specimen PMXCrossover(Specimen&, Specimen&);
 	Specimen orderedCrossover(Specimen&, Specimen&);
+	Specimen PMXCrossover(Specimen&, Specimen&);
 
 	void mutation(Specimen&);
 	void swapGenes(Specimen&);

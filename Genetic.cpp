@@ -137,7 +137,39 @@ void Genetic::sortPopulation()
 //------------------------------------------------------------------------------------------------------------------------------------
 void Genetic::nextGeneration()
 {
+	// chwilowy vector na dzieci
+	vector<Specimen> newPopulation;
+	int newChildren = startingPopulation - population.size() + 1;
+	newPopulation.reserve(newChildren);
 
+	// generowanie liczb losowych (rand() bylo niewystarczajace)
+	random_device rd;
+	mt19937 gen(rd());
+	uniform_int_distribution<int> distribution(0, population.size()-1);
+	
+	Specimen child;
+	cout << "nextGeneration, size of population = " << population.size() << "\n";
+
+	// dodanie potomka na kazde wolne miejsce w tabeli
+	for (int i = population.size(); i < startingPopulation; i++)
+	{
+		// wybor ktorzy rodzice. najlepsze rozwiazanie powinno miec szczegolne szanse, taki samiec alfa ktory plodzi duzo potomstwa
+		int id1 = distribution(gen);
+		int num = rand() % 100;
+		if (num < 70)
+			id1 = 0;
+
+		int id2 = 0;
+		do
+		{
+			id2 = distribution(gen);
+		} while (id1 == id2);
+		
+		child = crossover(population[id1], population[id2]);
+		newPopulation.emplace_back(child);
+	}
+	// polaczenie najsilniejszych osobnikow z nowym pokoleniem	
+	population.insert(population.end(), newPopulation.begin(), newPopulation.end());
 }
 //------------------------------------------------------------------------------------------------------------------------------------
 Specimen Genetic::crossover(Specimen& p1, Specimen& p2)
@@ -151,6 +183,34 @@ Specimen Genetic::crossover(Specimen& p1, Specimen& p2)
 Specimen Genetic::orderedCrossover(Specimen& p1, Specimen& p2)
 {
 	Specimen child;
+	child.path.resize(N);
+
+	int toCross = floor(crossoverValue * N);
+	int toFill = N - toCross;
+	int start = rand() % toFill;
+	int end = start + toCross - 1;
+
+	// kopia sekwencji od pierwszego rodzica
+	for (int i = start; i <= end; i++)
+	{
+		if (i < child.path.size()) // ostroznosci nigdy za wiele
+			child.path[i] = p1.path[i];
+	}
+
+	// uzupelnianie reszty
+	int endID = (end + 1) % N; // indeks zaraz za skopiowana sekwencja
+
+	// petla tyle razy ile jest wolnych miejsc (bez skopiowanej sekwencji)
+	for (int i = endID; i < (endID + toFill); i++)
+	{
+		// czy wierzcholek byl w skopiowanej sekwencji
+		while (find(child.path.begin(), child.path.end(), p2.path[endID]) != child.path.end())
+			endID = (endID + 1) % N; // jesli byl to bierzemy kolejny wierzcholek od p2
+		if ((i % N) < child.path.size()) // jesli nie to wstawiamy na wolne miejsce za skopiowana sekwencja upewniajac sie ze mozna 
+			child.path[(i % N)] = p2.path[endID]; // Jesli skonczylo sie miejsce za sekwencja to idziemy do poczatku
+		endID = (endID + 1) % N;			
+	}
+	child.sum = countSum(child.path);
 
 	return child;
 }
@@ -172,16 +232,16 @@ void Genetic::mutation(Specimen& a)
 //------------------------------------------------------------------------------------------------------------------------------------
 void Genetic::invertGenes(Specimen& a) 
 {	
-	int	toCross = floor(mutationValue * N);
-	if (toCross < 4)
-		toCross += 4;
+	int	toMutate = floor(mutationValue * N);
+	if (toMutate < 4)
+		toMutate += 4;
 
-	int num = N - toCross;
+	int num = N - toMutate;
 
-	int id1 = rand() % num;
-	int id2 = id1 + toCross;
+	int start = rand() % num;
+	int end = start + toMutate - 1;
 
-	reverse(a.path.begin() + id1, a.path.begin() + id2);
+	reverse(a.path.begin() + start, a.path.begin() + end);
 
 	a.sum = countSum(a.path);
 }
@@ -298,7 +358,6 @@ void Genetic::geneticAlgorithm() // poki co to jest pelna losowosc. Tylko zeby b
 		// tworzymy dzieci crossoverem tj losujemy dwoch rodzicow -> crossover -> mutacja -> dodajemy do vectora az bedzie pelny
 		nextGeneration();
 
-		
 	}
 }
 //------------------------------------------------------------------------------------------------------------------------------------
