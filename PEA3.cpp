@@ -9,7 +9,7 @@ string filename = "nic";
 string filename2;
 
 int stopTime = 1;
-double startingPopulation = 20;
+double startingPopulation = 100;
 double mutation = 0.01;
 double crossover = 0.8;
 int crossoverChoice = 1;

@@ -186,7 +186,7 @@ Specimen Genetic::orderedCrossover(Specimen& p1, Specimen& p2)
 	child.path.resize(N);
 	vector<int> copiedSequence;
 
-	int toCross = floor(crossoverValue * N);
+	int toCross = floor((1-crossoverValue) * N);
 	int toFill = N - toCross;
 	int start = rand() % toFill;
 	int end = start + toCross - 1;
@@ -228,7 +228,7 @@ Specimen Genetic::PMXCrossover(Specimen& p1, Specimen& p2)
 	child.path.resize(N);
 	unordered_map<int, int> pairsOfVertices;
 
-	int toCross = floor(crossoverValue * N);
+	int toCross = floor((1-crossoverValue) * N);
 	int toFill = N - toCross;
 	int start = rand() % toFill;
 	int end = start + toCross - 1;
