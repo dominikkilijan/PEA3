@@ -130,8 +130,8 @@ void Genetic::sortPopulation()
 		});
 
 	// survival of the fittest
-	// zostawiamy 10%
-	int idToErase = ceil(0.1 * startingPopulation);
+	// zostawiamy 10% -- pozniej 10%. Do testowania to jest za malo aktualnie
+	int idToErase = ceil(0.5 * startingPopulation);
 	population.erase(population.begin() + idToErase, population.end());
 }
 //------------------------------------------------------------------------------------------------------------------------------------
@@ -149,12 +149,14 @@ void Genetic::nextGeneration()
 	
 	Specimen child;
 	cout << "nextGeneration, size of population = " << population.size() << "\n";
+	cout << "startingPopulation = " << startingPopulation << "\n";
 
 	// dodanie potomka na kazde wolne miejsce w tabeli
 	for (int i = population.size(); i < startingPopulation; i++)
 	{
+		cout << i << endl;
 		// wybor ktorzy rodzice. najlepsze rozwiazanie powinno miec szczegolne szanse, taki samiec alfa ktory plodzi duzo potomstwa
-		int id1 = distribution(gen);
+		/*int id1 = distribution(gen);
 		int num = rand() % 100;
 		if (num < 70)
 			id1 = 0;
@@ -163,10 +165,17 @@ void Genetic::nextGeneration()
 		do
 		{
 			id2 = distribution(gen);
-		} while (id1 == id2);
+		} while (id1 == id2);*/ // srednio dziala dla malych populacji. na chwile tylko rodzice to jedynie 0 i 1
+		int id1 = 0;
+		int id2 = 1;
+
 		
+		
+		cout << "id1, id2: " << id1 << ", " << id2 << "\n";
 		child = crossover(population[id1], population[id2]);
+		cout << "przed dodaniem dziecka do newPopulation\n";
 		newPopulation.emplace_back(child);
+		cout << "po dodaniu dziecka do newPopulation\n";
 	}
 	// polaczenie najsilniejszych osobnikow z nowym pokoleniem	
 	population.insert(population.end(), newPopulation.begin(), newPopulation.end());
@@ -174,43 +183,77 @@ void Genetic::nextGeneration()
 //------------------------------------------------------------------------------------------------------------------------------------
 Specimen Genetic::crossover(Specimen& p1, Specimen& p2)
 {
+	cout << "crossoverChoice = " << crossoverChoice << endl;
 	if (crossoverChoice == 1)
+	{
+		cout << "crossoverChoice = 1 i wchodzimy do ordered \n";
 		return orderedCrossover(p1, p2);
+	}
 	else if (crossoverChoice == 2)
 		 return PMXCrossover(p1, p2);
 }
 //------------------------------------------------------------------------------------------------------------------------------------
 Specimen Genetic::orderedCrossover(Specimen& p1, Specimen& p2)
 {
+	cout << "------------------------------------------------------------------------------\n";
 	Specimen child;
 	child.path.resize(N);
+	vector<int> copiedSequence;
 
 	int toCross = floor(crossoverValue * N);
+	cout << "toCross = " << toCross << endl;
 	int toFill = N - toCross;
 	int start = rand() % toFill;
 	int end = start + toCross - 1;
 
+	copiedSequence.reserve(toCross);
+
+	cout << "Kopiowanie sekwencji od rodzica \n";
 	// kopia sekwencji od pierwszego rodzica
 	for (int i = start; i <= end; i++)
 	{
 		if (i < child.path.size()) // ostroznosci nigdy za wiele
+		{
 			child.path[i] = p1.path[i];
+			copiedSequence.emplace_back(p1.path[i]);
+		}
 	}
+	cout << "Skopiowana sekwencja: \n";
+	printPath(copiedSequence);
+
+	cout << "Skopiowana sekwencja w child: \n";
+	printPath(child.path);
 
 	// uzupelnianie reszty
 	int endID = (end + 1) % N; // indeks zaraz za skopiowana sekwencja
-
+	cout << "endID = " << endID << endl;
 	// petla tyle razy ile jest wolnych miejsc (bez skopiowanej sekwencji)
-	for (int i = endID; i < (endID + toFill); i++)
+	int maxIter = endID + toFill;
+	cout << "Petla konczy sie na i < " << maxIter << endl;
+	for (int i = endID; i < maxIter; i++)
 	{
+		cout << "						i = " << i << endl;
+		cout << "p2.path[endID] = " << p2.path[endID] << endl;
 		// czy wierzcholek byl w skopiowanej sekwencji
-		while (find(child.path.begin(), child.path.end(), p2.path[endID]) != child.path.end())
+		while (find(copiedSequence.begin(), copiedSequence.end(), p2.path[endID]) != copiedSequence.end())
+		{
+			cout << "p2.path[endID] = " << p2.path[endID] << endl;
 			endID = (endID + 1) % N; // jesli byl to bierzemy kolejny wierzcholek od p2
-		if ((i % N) < child.path.size()) // jesli nie to wstawiamy na wolne miejsce za skopiowana sekwencja upewniajac sie ze mozna 
-			child.path[(i % N)] = p2.path[endID]; // Jesli skonczylo sie miejsce za sekwencja to idziemy do poczatku
+			cout << "endID = " << endID << endl;
+		}
+		//if ((i % N) < child.path.size()) // jesli nie to wstawiamy na wolne miejsce za skopiowana sekwencja upewniajac sie ze mozna 
+		//{
+		cout << "p2.path[endID] = " << p2.path[endID] << endl;
+		child.path[(i % N)] = p2.path[endID]; // Jesli skonczylo sie miejsce za sekwencja to idziemy do poczatku
+		printPath(child.path);
+		//}
 		endID = (endID + 1) % N;			
+		cout << "endID = " << endID << endl;
+		cout << "						i = " << i << endl;
 	}
 	child.sum = countSum(child.path);
+	cout << "Pelny kod genetyczny dziecka:\n";
+	printPath(child.path);
 
 	return child;
 }
@@ -331,12 +374,14 @@ void Genetic::geneticAlgorithm() // poki co to jest pelna losowosc. Tylko zeby b
 	seconds finalTime;
 	
 	// petla jesli nie skonczyl sie czas
-	while ((system_clock::now() - startTime) < stopTimeSeconds)
-	//for (int i = 0; i < 1; i++)
+	//while ((system_clock::now() - startTime) < stopTimeSeconds)
+	for (int i = 0; i < 1; i++)
 	{
-		// sortowanie populacji
-		// zostawiamy np ceil 10% startingPopulation, reszte usuwamy
+		// sortowanie populacji. Zostawiamy 10% populacji, reszte usuwamy
 		sortPopulation();
+
+		/*cout << "Najlepszy z pokolenia: \n";
+		printSpecimen(population[0]);*/
 		
 		// population jest posortowane wedlug wagi wiec najlepsze rozwiazanie jest na pierwszym miejscu
 		if (population[0].sum < bestSum)
