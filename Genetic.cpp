@@ -352,7 +352,7 @@ void Genetic::geneticAlgorithm() // poki co to jest pelna losowosc. Tylko zeby b
 	
 	// poczatkowa populacja
 	initPopulation();
-
+	long long int populationNr = 0;
 	// poczatkowe wyniki
 	bestSum = population[0].sum;
 	bestPath = population[0].path;
@@ -403,7 +403,10 @@ void Genetic::geneticAlgorithm() // poki co to jest pelna losowosc. Tylko zeby b
 
 			cout << "bestSum = " << bestSum << "\n";
 			cout << "Znalezienie bestSum w ms: " << setprecision(10) << bestElapsed << endl;
+			cout << "Populcja nr " << populationNr << "\n";
 		}
+		populationNr++;
 	}
+	cout << "W sumie bylo " << populationNr << " populacji\n";
 }
 //------------------------------------------------------------------------------------------------------------------------------------
