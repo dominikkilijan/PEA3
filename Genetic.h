@@ -25,6 +25,7 @@ public:
 	void printSpecimen(Specimen&);
 
 	void initPopulation();
+	void initGreedyPopulation();
 	bool compareSpecimen(Specimen&, Specimen&);
 	void sortPopulation();
 	void nextGeneration();

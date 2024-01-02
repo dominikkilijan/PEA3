@@ -73,7 +73,6 @@ double Genetic::countSum(vector<int>& countPath)
 //------------------------------------------------------------------------------------------------------------------------------------
 void Genetic::initPath(vector<int>& path)
 {
-	// tylko na czas random
 	for (int i = 0; i < N; i++)
 	{
 		path.emplace_back(i);
@@ -114,6 +113,32 @@ void Genetic::initPopulation()
 		a.sum = countSum(a.path);
 		population.emplace_back(a);
 	}
+
+	// poczatkowe wyniki
+	bestSum = population[0].sum;
+	bestPath = population[0].path;
+}
+//------------------------------------------------------------------------------------------------------------------------------------
+void Genetic::initGreedyPopulation()
+{
+	// greedy sciezka
+	NearestNeighbour nn(N, matrix, bestPath);
+	nn.findNearestNeighbourPath();
+
+	bestSum = countSum(bestPath);
+
+	Specimen a;
+	a.path = bestPath;
+	a.sum = bestSum;
+	population.emplace_back(a);
+
+	// tego tak w sumie tutaj nie trzeba jesli randomPath dziala dobrze. Co innego jesli robimy nn wiec zostawie zakomentowane
+	for (int i = 1; i < startingPopulation; i++)
+	{
+		population.emplace_back(a);
+		mutation(population[i]);
+	}
+
 }
 //------------------------------------------------------------------------------------------------------------------------------------
 bool Genetic::compareSpecimen(Specimen& a, Specimen& b)
@@ -127,9 +152,15 @@ void Genetic::sortPopulation()
 		return compareSpecimen(a, b);
 		});
 
+	// usuwanie zduplikowanych osobników
+	auto uniqueEnd = std::unique(population.begin(), population.end(), [&](Specimen& a, Specimen& b) {
+		return a.path == b.path && a.sum == b.sum;
+		});
+	population.erase(uniqueEnd, population.end());
+
 	// survival of the fittest
 	// zostawiamy 10% -- pozniej 10%. Do testowania to jest za malo aktualnie
-	int idToErase = ceil(0.5 * startingPopulation);
+	int idToErase = ceil(0.1 * population.size());
 	population.erase(population.begin() + idToErase, population.end());
 }
 //------------------------------------------------------------------------------------------------------------------------------------
@@ -152,10 +183,6 @@ void Genetic::nextGeneration()
 	{
 		// wybor ktorzy rodzice. najlepsze rozwiazanie powinno miec szczegolne szanse, taki samiec alfa ktory plodzi duzo potomstwa
 		int id1 = distribution(gen);
-		int num = rand() % 100;
-		if (num < 70)
-			id1 = 0;
-
 		int id2 = 0;
 		do
 		{
@@ -346,17 +373,11 @@ void Genetic::TSPGenetic()
 //------------------------------------------------------------------------------------------------------------------------------------
 void Genetic::geneticAlgorithm() // poki co to jest pelna losowosc. Tylko zeby bylo cokolwiek
 {
-	//// greedy sciezka
-	//NearestNeighbour nn(N, matrix, bestPath);
-	//nn.findNearestNeighbourPath();
-	
 	// poczatkowa populacja
 	initPopulation();
+	//initGreedyPopulation();
+	cout << "population[0].sum = " << population[0].sum << endl;
 	long long int populationNr = 0;
-	// poczatkowe wyniki
-	bestSum = population[0].sum;
-	bestPath = population[0].path;
-	
 
 	// bedzie wytlumaczone w petli
 	sortPopulation();
@@ -370,12 +391,6 @@ void Genetic::geneticAlgorithm() // poki co to jest pelna losowosc. Tylko zeby b
 		cout << "bestSum = " << bestSum << "\n";
 		cout << "Znalezienie bestSum w ms: " << setprecision(10) << bestElapsed << endl;
 	}
-	// tego tak w sumie tutaj nie trzeba jesli randomPath dziala dobrze. Co innego jesli robimy nn wiec zostawie zakomentowane
-	/*for (int i = 0; i < startingPopulation; i++)
-	{
-		mutation(population[i]);
-		printPath(population[i].path);
-	}*/
 
 	// przygotowanie minutnika algorytmu
 	const time_point<system_clock> startTime = system_clock::now();
@@ -384,7 +399,7 @@ void Genetic::geneticAlgorithm() // poki co to jest pelna losowosc. Tylko zeby b
 	
 	// petla jesli nie skonczyl sie czas
 	while ((system_clock::now() - startTime) < stopTimeSeconds)
-	//for (int i = 0; i < 1; i++)
+	//for (int i = 0; i < 5; i++)
 	{
 		// tworzymy dzieci crossoverem tj losujemy dwoch rodzicow -> crossover -> mutacja -> dodajemy do vectora az bedzie pelny
 		nextGeneration();
@@ -403,7 +418,7 @@ void Genetic::geneticAlgorithm() // poki co to jest pelna losowosc. Tylko zeby b
 
 			cout << "bestSum = " << bestSum << "\n";
 			cout << "Znalezienie bestSum w ms: " << setprecision(10) << bestElapsed << endl;
-			cout << "Populcja nr " << populationNr << "\n";
+			cout << "Populacja nr " << populationNr << "\n";
 		}
 		populationNr++;
 	}
