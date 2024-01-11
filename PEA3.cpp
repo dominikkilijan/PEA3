@@ -8,12 +8,12 @@ int run = 1;
 string filename = "nic";
 string filename2;
 
-int stopTime = 5;
+int stopTime = 120;
 double startingPopulation = 1000;
 double mutation = 0.01;
 double crossover = 0.8;
-int crossoverChoice = 1;
-int mutationChoice = 1;
+int crossoverChoice = 1; // 1. Order  2. PMX
+int mutationChoice = 2;  // 1. Invert 2. Swap
 
 
 
@@ -47,8 +47,9 @@ int main()
             // Wczytaj dane z pliku
             cout << "Podaj nazwe pliku:\n";
             //cin >> filename;
-            //filename = "br17.xml";
-            filename = "ftv47.xml";
+            //filename = "ftv47.xml";
+            //filename = "ftv170.xml";
+            filename = "rbg403.xml";
             if (filename != "nic")
                 fHandler.openFile(filename);
             else

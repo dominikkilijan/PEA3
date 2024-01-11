@@ -18,10 +18,6 @@ using namespace std::chrono;
 
 
 //------------------------------------------------------------------------------------------------------------------------------------
-//Genetic(int, int**, int, double, double, double, int, int); // wierzcholki, macierz, stopTime, startingPopulation, 
-// mutation, crossover, crossoverChoice, mutationChoice
-
-
 Genetic::Genetic(int n, int** m, int sTime, double startPop, double mut, double cross, int cChoice, int mChoice)
 {
 	N = n;
@@ -73,6 +69,7 @@ double Genetic::countSum(vector<int>& countPath)
 //------------------------------------------------------------------------------------------------------------------------------------
 void Genetic::initPath(vector<int>& path)
 {
+	// wierzcholki ulozone w kolejnosci 0,1,2,3,4...
 	for (int i = 0; i < N; i++)
 	{
 		path.emplace_back(i);
@@ -83,7 +80,7 @@ void Genetic::randomPath(vector<int>& path)
 {	
 	auto seed = static_cast<unsigned>(high_resolution_clock::now().time_since_epoch().count());
 	auto rng = std::default_random_engine(seed);
-
+	// po prostu mieszamy sciezke
 	shuffle(begin(path), end(path), rng);
 }
 //------------------------------------------------------------------------------------------------------------------------------------
@@ -131,8 +128,7 @@ void Genetic::initGreedyPopulation()
 	a.path = bestPath;
 	a.sum = bestSum;
 	population.emplace_back(a);
-
-	// tego tak w sumie tutaj nie trzeba jesli randomPath dziala dobrze. Co innego jesli robimy nn wiec zostawie zakomentowane
+	
 	for (int i = 1; i < startingPopulation; i++)
 	{
 		population.emplace_back(a);
@@ -159,7 +155,7 @@ void Genetic::sortPopulation()
 	population.erase(uniqueEnd, population.end());
 
 	// survival of the fittest
-	// zostawiamy 10% -- pozniej 10%. Do testowania to jest za malo aktualnie
+	// zostawiamy 10%
 	int idToErase = ceil(0.1 * population.size());
 	population.erase(population.begin() + idToErase, population.end());
 }
@@ -181,14 +177,20 @@ void Genetic::nextGeneration()
 	// dodanie potomka na kazde wolne miejsce w tabeli
 	for (int i = population.size(); i < startingPopulation; i++)
 	{
-		// wybor ktorzy rodzice. najlepsze rozwiazanie powinno miec szczegolne szanse, taki samiec alfa ktory plodzi duzo potomstwa
+		// losowanie rodzicow
 		int id1 = distribution(gen);
+		// 70% szans ze jako jeden z rodzicow zostanie wybrany najlepszy dostepny rodzic
+		//int num = rand() % 100;
+		//if (num < 70)
+		//	id1 = 0;
+
+
 		int id2 = 0;
 		do
 		{
 			id2 = distribution(gen);
-		} while (id1 == id2); // srednio dziala dla malych populacji. na chwile tylko rodzice to jedynie 0 i 1
-
+		} while (id1 == id2);
+		
 		child = crossover(population[id1], population[id2]);
 		mutation(child);
 		newPopulation.emplace_back(child);
@@ -276,8 +278,10 @@ Specimen Genetic::PMXCrossover(Specimen& p1, Specimen& p2)
 		if (i < start || i > end)
 		{
 			int current = p2.path[i];
+			// jesli jest w mapie to znaczy ze byl juz dodany i trzeba szukac nowy
 			while (pairsOfVertices.find(current) != pairsOfVertices.end())
 			{
+				// jako nowy current przypisujemy jego pare z mapy
 				current = pairsOfVertices[current];
 			}
 			child.path[i] = current;
@@ -319,10 +323,10 @@ void Genetic::swapGenes(Specimen& a)
 	mt19937 gen(rd());
 	uniform_int_distribution<int> distribution(0, N - 1);
 
+	// kazdy procent to jeden swap
 	for (int i = 0; i < (mutationValue * 100); i++)
 	{
 		int id1 = distribution(gen);
-		cout << i << endl;
 		int id2 = 0;
 		do
 		{
@@ -371,7 +375,7 @@ void Genetic::TSPGenetic()
 	file.close();
 }
 //------------------------------------------------------------------------------------------------------------------------------------
-void Genetic::geneticAlgorithm() // poki co to jest pelna losowosc. Tylko zeby bylo cokolwiek
+void Genetic::geneticAlgorithm()
 {
 	// poczatkowa populacja
 	initPopulation();
@@ -379,7 +383,12 @@ void Genetic::geneticAlgorithm() // poki co to jest pelna losowosc. Tylko zeby b
 	cout << "population[0].sum = " << population[0].sum << endl;
 	long long int populationNr = 0;
 
-	// bedzie wytlumaczone w petli
+	// przygotowanie minutnika algorytmu
+	const time_point<system_clock> startTime = system_clock::now();
+	seconds stopTimeSeconds = seconds(stopTime);
+	seconds finalTime;
+
+	// bedzie wytlumaczone w petli kawalek nizej
 	sortPopulation();
 	if (population[0].sum < bestSum)
 	{
@@ -391,11 +400,6 @@ void Genetic::geneticAlgorithm() // poki co to jest pelna losowosc. Tylko zeby b
 		cout << "bestSum = " << bestSum << "\n";
 		cout << "Znalezienie bestSum w ms: " << setprecision(10) << bestElapsed << endl;
 	}
-
-	// przygotowanie minutnika algorytmu
-	const time_point<system_clock> startTime = system_clock::now();
-	seconds stopTimeSeconds = seconds(stopTime);
-	seconds finalTime;
 	
 	// petla jesli nie skonczyl sie czas
 	while ((system_clock::now() - startTime) < stopTimeSeconds)
@@ -403,7 +407,7 @@ void Genetic::geneticAlgorithm() // poki co to jest pelna losowosc. Tylko zeby b
 	{
 		// tworzymy dzieci crossoverem tj losujemy dwoch rodzicow -> crossover -> mutacja -> dodajemy do vectora az bedzie pelny
 		nextGeneration();
-		// sortowanie populacji. Zostawiamy 10% populacji, reszte usuwamy
+		// sortowanie populacji i usuniecie duplikatow. Zostawiamy 10% populacji, reszte usuwamy
 		sortPopulation();
 		// population jest posortowane wedlug wagi wiec najlepsze rozwiazanie jest na pierwszym miejscu
 		if (population[0].sum < bestSum)
